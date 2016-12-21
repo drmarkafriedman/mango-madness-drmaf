@@ -5,27 +5,47 @@
  * DrMAF version coded by Dr. Mark A. Friedman <drmarkafriedman@richardroman.com>
  ******************************************************************************/
 
+/*******************************************************************************
+ * Include Quorum libraries
+ ******************************************************************************/
+
 use Libraries.Game.Game
 use Libraries.Game.InputMonitor
 use Libraries.Interface.Events.KeyboardEvent
 
+/*******************************************************************************
+ * Main class implements the game
+ ******************************************************************************/
+
 class Main is Game
 
+    /***************************************************************************
+     * Main action starts the game
+     **************************************************************************/
+     
     action Main
         StartGame()
     end
 
+    /***************************************************************************
+     * Create action initializes the game objects
+     **************************************************************************/
+     
     action CreateGame
     end
 
     /***************************************************************************
-     * Quit the game
+     * Quit action terminates the game
      **************************************************************************/
      
     action Quit
         Exit()
     end
 
+    /***************************************************************************
+     * Update action updates the next game frame
+     **************************************************************************/
+     
     action Update(number seconds)
 
         InputMonitor monitor                           // input monitor object
@@ -43,5 +63,4 @@ end
 
 /* Local Variables:      */
 /* indent-tabs-mode: nil */
-/* mode: quorum-mode     */
 /* End:                  */
