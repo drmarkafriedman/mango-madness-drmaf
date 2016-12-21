@@ -6,6 +6,8 @@
  ******************************************************************************/
 
 use Libraries.Game.Game
+use Libraries.Game.InputMonitor
+use Libraries.Interface.Events.KeyboardEvent
 
 class Main is Game
 
@@ -16,9 +18,23 @@ class Main is Game
     action CreateGame
     end
 
-    action Update(number seconds)
+    action Quit
+        Exit()
     end
-    
+
+    action Update(number seconds)
+
+        InputMonitor monitor                           // input monitor object
+        KeyboardEvent keys                             // keyboard event object
+
+        // Quit the game when the Q key is pressed
+
+        if monitor:IsKeyPressed(keys:Q)
+            Quit()
+        end
+
+    end
+
 end
 
 /* Local Variables:      */
