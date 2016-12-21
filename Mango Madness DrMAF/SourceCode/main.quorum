@@ -1,50 +1,77 @@
 /*******************************************************************************
- * Mango Madness DrMAF
- * Conceived by Tommy P
- * Original version developed by Tom, Sam and Mark
- * DrMAF version coded by Dr. Mark A. Friedman <drmarkafriedman@richardroman.com>
- ******************************************************************************/
+* Mango Madness DrMAF
+* Conceived by Tommy P
+* Original version developed by Tom, Sam and Mark
+* DrMAF version coded by Dr. Mark A. Friedman <drmarkafriedman@richardroman.com>
+*******************************************************************************/
 
 /*******************************************************************************
- * Include Quorum libraries
- ******************************************************************************/
+* Include Quorum libraries
+*******************************************************************************/
 
 use Libraries.Game.Game
 use Libraries.Game.InputMonitor
 use Libraries.Interface.Events.KeyboardEvent
 
 /*******************************************************************************
- * Main class implements the game
- ******************************************************************************/
+* Main class implements the game
+*******************************************************************************/
 
 class Main is Game
 
     /***************************************************************************
-     * Main action starts the game
-     **************************************************************************/
+    * Global variables
+    ***************************************************************************/
      
-    action Main
+    text gameName = "Mango Madness"                    // game name
+    
+    integer displayWidth = 1024                        // display width
+    integer displayHeight = 768                        // display height
+    
+    boolean displayFullscreen = true                   // fullscreen or windowed
+
+    /***************************************************************************
+    * Main action starts the game
+    ***************************************************************************/
+     
+     action Main
+	 
+        // Set the game name 
+
+        SetGameName(gameName)
+	
+        // Set the game screen size to full screen with the desired resolution
+
+        SetScreenSize(displayWidth, displayHeight)
+        
+        if displayFullscreen
+	    SetFullScreen(true)
+        end
+        
+        // Start the game 
+        
         StartGame()
+	
     end
 
     /***************************************************************************
-     * Create action initializes the game objects
-     **************************************************************************/
+    * Create action initializes the game objects
+    ***************************************************************************/
      
     action CreateGame
     end
 
     /***************************************************************************
-     * Quit action terminates the game
-     **************************************************************************/
+    * Quit action terminates the game
+    ***************************************************************************/
      
     action Quit
         Exit()
     end
 
     /***************************************************************************
-     * Update action updates the next game frame
-     **************************************************************************/
+    * Update action updates the next game frame
+    ***************************************************************************/
      
     action Update(number seconds)
 
