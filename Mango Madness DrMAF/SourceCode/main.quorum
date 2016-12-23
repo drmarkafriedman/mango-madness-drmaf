@@ -19,6 +19,7 @@
 use Libraries.Game.Game
 use Libraries.Game.InputMonitor
 use Libraries.Interface.Events.KeyboardEvent
+use Libraries.Sound.Speech
 
 class Main is Game
 
@@ -64,6 +65,10 @@ class Main is Game
     private Timer stateTimer
     private number stateProgress = 0.0
     
+    // debug mode speech synthesizer
+    
+    public Speech debugSpeech
+    
     //**************************************************************************
     // action Main starts the game
          
@@ -76,6 +81,10 @@ class Main is Game
         SetScreenSize(configuration:displayWidth, configuration:displayHeight)
         SetFullScreen(configuration:displayFullscreen)
                 
+        debugSpeech:SetPitch(1.0)
+        debugSpeech:SetSpeed(0.6)
+        debugSpeech:SetVolume(1.0)
+        
         StartGame()
                 
     end // action Main
@@ -93,6 +102,10 @@ class Main is Game
         
         stateTimer:Start(configuration:gameStatePreviewTime)
         gameState = GAME_STATE_PREVIEW
+        
+        if configuration:debugMode
+            debugSpeech:Say("Entering Game State Preview")
+        end
         
     end // action CreateGame
 
@@ -138,29 +151,44 @@ class Main is Game
                 else
                     stateTimer:Start(configuration:gameStatePreviewToPlayTime)
                     gameState = GAME_STATE_PREVIEW_TO_PLAY
+                    if configuration:debugMode
+                        debugSpeech:Say("Entering Game State Preview To Play")
+                    end
                 end
             elseif gameState = GAME_STATE_PREVIEW_TO_PLAY
                 if stateProgress <= 1.0
                 else
                     stateTimer:Start(configuration:gameStatePlayTime)
                     gameState = GAME_STATE_PLAY
+                    if configuration:debugMode
+                        debugSpeech:Say("Entering Game State Play")
+                    end
                 end
             elseif gameState = GAME_STATE_PLAY
                 if stateProgress <= 1.0
                 else
                     stateTimer:Start(configuration:gameStatePlayToEpilogTime)
                     gameState = GAME_STATE_PLAY_TO_EPILOG
+                    if configuration:debugMode
+                        debugSpeech:Say("Entering Game State Play To Epilog")
+                    end
                 end
             elseif gameState = GAME_STATE_PLAY_TO_EPILOG
                 if stateProgress <= 1.0
                 else
                     stateTimer:Start(configuration:gameStateEpilogTime)
                     gameState = GAME_STATE_EPILOG
+                    if configuration:debugMode
+                        debugSpeech:Say("Entering Game State Epilog")
+                    end
                 end
             elseif gameState = GAME_STATE_EPILOG
                 if stateProgress <= 1.0
                 else
                     Exit()
+                    if configuration:debugMode
+                        debugSpeech:Say("Exiting Game")
+                    end
                 end
             end
         

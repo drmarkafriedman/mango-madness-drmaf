@@ -35,6 +35,8 @@ class Configuration
     public number gameStatePlayToEpilogTime = 10.0     // time for game play to epilog state (seconds)
     public number gameStateEpilogTime = 60.0           // time for game epilog state (seconds)
     
+    public boolean debugMode = false                   // debug mode adds verbose output
+    
     //**************************************************************************
     // action Load loads configurable values from a configuration file
                                         
@@ -144,6 +146,9 @@ class Configuration
                                 if gameStateEpilogTime < 0
                                     alert("gameStateEpilogTime not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
                                 end
+                                
+                            elseif variableName = "debugMode"
+                                debugMode = variableValue:ParseBoolean()
                             
                             else
                                 alert("Unrecognized variable name in configuration file (" + configurationFilename + "): " + line)
