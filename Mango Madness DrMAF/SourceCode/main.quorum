@@ -1,92 +1,91 @@
 /*******************************************************************************
-* Mango Madness DrMAF
-* Conceived by Tommy P
-* Original version developed by Tom, Sam and Mark
-* DrMAF version coded by Dr. Mark A. Friedman <drmarkafriedman@richardroman.com>
-*******************************************************************************/
+ * File: main.quorum
+ * Description: Main class for Mango Madness
+ * Author: Dr. Mark A. Friedman <drmarkafriedman@richardroman.com>
+ ******************************************************************************/
 
 /*******************************************************************************
-* Include Quorum libraries
-*******************************************************************************/
+ * class Main implements the Mango Madness game
+ *
+ * Description: Mango Madnes is a game where you aim a cannon while onboard a
+ *     pirate ship and shoot mangos at flying seagulls to knock them out of
+ *     the sky to score points.
+ *
+ * Notes: Mango Madness was conceived by Tommy P. The original version is
+ *     being developed by Tom, Sam and Mark. This version may morph and serve
+ *     as an educational tool sometime down the line.
+ ******************************************************************************/
 
 use Libraries.Game.Game
 use Libraries.Game.InputMonitor
 use Libraries.Interface.Events.KeyboardEvent
 
-/*******************************************************************************
-* Main class implements the game
-*******************************************************************************/
-
 class Main is Game
 
-    /***************************************************************************
-    * Global variables
-    ***************************************************************************/
-     
-    text gameName = "Mango Madness"                    // game name
+    //**************************************************************************
+    // class Main members
     
-    integer displayWidth = 1024                        // display width
-    integer displayHeight = 768                        // display height
+    // configuration manages the game's configurable values which have
+    // hardcoded default values and which may be changed through the
+    // configuration file specified below
     
-    boolean displayFullscreen = true                   // fullscreen or windowed
-
-    /***************************************************************************
-    * Main action starts the game
-    ***************************************************************************/
-     
-     action Main
-	 
-        // Set the game name 
-
-        SetGameName(gameName)
-	
-        // Set the game screen size to full screen with the desired resolution
-
-        SetScreenSize(displayWidth, displayHeight)
+    public Configuration configuration
         
-        if displayFullscreen
-	    SetFullScreen(true)
-        end
+    private constant text CONFIGURATION_FILENAME = "configuration/mango-madness.ini"
+
+    private gameState = 0
+    
+    //**************************************************************************
+    // action Main starts the game
+         
+    action Main
+                 
+        configuration:Load(CONFIGURATION_FILENAME)
+                
+        SetGameName(configuration:gameName)
         
-        // Start the game 
-        
+        SetScreenSize(configuration:displayWidth, configuration:displayHeight)
+        SetFullScreen(configuration:displayFullscreen)
+                
         StartGame()
-	
-    end
+                
+    end // action Main
 
-    /***************************************************************************
-    * Create action initializes the game objects
-    ***************************************************************************/
-     
+    //**************************************************************************
+    // action Create initializes the game objects
+         
     action CreateGame
-    end
+    
+    end // action CreateGame
 
-    /***************************************************************************
-    * Quit action terminates the game
-    ***************************************************************************/
-     
+    //**************************************************************************
+    // action Quit ends the game
+         
     action Quit
+    
         Exit()
-    end
+        
+    end // action Quit
 
-    /***************************************************************************
-    * Update action updates the next game frame
-    ***************************************************************************/
-     
+    //**************************************************************************
+    // action Update updates each game frame
+         
     action Update(number seconds)
 
-        InputMonitor monitor                           // input monitor object
-        KeyboardEvent keys                             // keyboard event object
+        InputMonitor monitor
+        KeyboardEvent keys
 
         // Quit the game when the Q key is pressed
 
         if monitor:IsKeyPressed(keys:Q)
+        
             Quit()
+            
         end
 
-    end
+    end // action Update
 
-end
+end // class Main
 
 /* Local Variables:      */
 /* indent-tabs-mode: nil */

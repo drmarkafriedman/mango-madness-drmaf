@@ -1,0 +1,130 @@
+/*******************************************************************************
+ * File: Configuration.quorum
+ * Description: Configuration class for Mango Madness
+ * Author: Dr. Mark A. Friedman <drmarkafriedman@richardroman.com>
+ ******************************************************************************/
+
+/*******************************************************************************
+ * class Configuration manages the game's configurable values
+ *
+ * Description: The Configuration object stores and manages configurable values
+ * which may be changed from their default hardcoded values through a
+ * configuration file.
+ ******************************************************************************/
+
+use Libraries.System.File
+use Libraries.System.FileReader
+
+class Configuration
+
+    public text gameName = "Mango Madness"             // game name
+        
+    public integer displayWidth = 1024                 // display width
+    public integer displayHeight = 768                 // display height
+        
+    public boolean displayFullscreen = true            // fullscreen or windowed
+
+    // action Load loads configurable values from a configuration file
+                                        
+    public action Load(text configurationFilename)
+                 
+        File configurationFile                         // file access variables
+        FileReader fileReader
+
+        text line = ""                                 // configuration file line
+        
+        text commentStartString = "//"                 // parsing assisting variables
+        integer commentPosition = 0
+        text assignmentOperatorString = "="
+        integer assignmentOperatorPosition = 0
+        
+        text variableName = ""                         // extracted values
+        text variableValue = ""
+                
+        configurationFile:SetPath(configurationFilename)
+                
+        if not configurationFile:IsFile()
+            alert("Configuration file " + configurationFilename + " is not accessible")
+        end
+
+        check
+                
+            fileReader:OpenForRead(configurationFile)
+
+            repeat while not fileReader:IsAtEndOfFile()
+            
+                line = fileReader:ReadLine()
+                
+                commentPosition = line:IndexOf(commentStartString)
+                if commentPosition >= 0
+                    line = line:GetSubtext(0, commentPosition)
+                end
+                
+                line = line:Trim()
+                
+                if not line:IsEmpty()
+                
+                    assignmentOperatorPosition = line:IndexOf(assignmentOperatorString)
+                                        
+                    if assignmentOperatorPosition >= 0
+                
+                        variableName = line:GetSubtext(0, assignmentOperatorPosition)
+                        variableName = variableName:Trim()
+                
+                        variableValue = line:GetSubtext(assignmentOperatorPosition + assignmentOperatorString:GetSize())
+                        variableValue = variableValue:Trim()
+
+                        check
+                        
+                            if variableName:IsEmpty()
+                                alert("Missing variable name in configuration file (" + configurationFilename + "): " + line)
+                                
+                            elseif variableName = "gameName"
+                                gameName = variableValue
+                                
+                            elseif variableName = "displayWidth"
+                                displayWidth = variableValue:ParseInteger()
+                                if displayWidth <= 0
+                                    alert("displayWidth not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "displayHeight"
+                                displayHeight = variableValue:ParseInteger()
+                                if displayHeight <= 0
+                                    alert("displayHeight not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "displayFullscreen"
+                                displayFullscreen = variableValue:ParseBoolean()
+                             
+                            else
+                                alert("Unrecognized variable name in configuration file (" + configurationFilename + "): " + line)
+                            end
+                        
+                        detect e is Error
+                            output "Error: " + e:GetErrorMessage()
+                            alert("Unable to set variable to value in configuration file (" + configurationFilename + "): " + line)
+                        end
+                                                
+                    else
+                        alert("Missing assignment operator in configuration file (" + configurationFilename + "): " + line)
+                    end
+                    
+                end
+                
+            end
+                        
+            fileReader:Close()
+                
+        detect e is Error
+            output "Error: " + e:GetErrorMessage()
+            alert("Processing of configuration file (" + configurationFilename + ") failed")
+        end
+
+    end // action Load
+         
+end // class Configuration
+
+/* Local Variables:      */
+/* indent-tabs-mode: nil */
+/* End:                  */
