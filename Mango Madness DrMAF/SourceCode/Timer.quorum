@@ -1,0 +1,49 @@
+/*******************************************************************************
+ * File: Timer.quorum
+ * Description: Timer class for Mango Madness
+ * Author: Dr. Mark A. Friedman <drmarkafriedman@richardroman.com>
+ ******************************************************************************/
+
+/*******************************************************************************
+ * class Timer creates a timer that is procedurally updated and reports its
+ * progress as a percentage of the elasped time towards completion.
+ *
+ * The Timer is intialized with a completion time and is updated through an
+ * action call which increases elapsed time with a specified value and which
+ * returns the percentage of time that has elasped with respect to the total
+ * time that is needed for completion.
+ ******************************************************************************/
+
+class Timer
+
+    private number elapsedTime = 0                     // time that has elapsed
+    private number completionTime = 0                  // time when timer completes
+        
+    // action Start initiates the Timer specifying the time for completion
+                                        
+    public action Start(number completionTime)
+
+        if completionTime >= 0
+            me:completionTime = completionTime
+            elapsedTime = 0
+        else
+            alert("Negative completion time not passed to Timer Start") 
+        end
+
+    end // action Start
+         
+    // action Progress advances the Timer and returns its progress as a
+    // percentage of completion time
+                                        
+    public action Progress(number additionalTime) returns number
+                 
+        elapsedTime = elapsedTime + additionalTime
+        return elapsedTime / completionTime
+
+    end // action Progress
+         
+end // class Timer
+
+/* Local Variables:      */
+/* indent-tabs-mode: nil */
+/* End:                  */
