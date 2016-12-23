@@ -25,15 +25,44 @@ class Main is Game
     //**************************************************************************
     // class Main members
     
-    // configuration manages the game's configurable values which have
-    // hardcoded default values and which may be changed through the
+    // The configuration object manages the game's configurable values which
+    // have hardcoded default values and which may be changed through the
     // configuration file specified below
     
     public Configuration configuration
         
     private constant text CONFIGURATION_FILENAME = "configuration/mango-madness.ini"
 
-    private gameState = 0
+    // gameState holds the current state of the game
+    
+    // GAME_STATE_HELP: help screen and dialog are presented
+    // GAME_STATE_PAUSED: pause the game (other than help presentation)
+    // GAME_STATE_PREVIEW: ship sailing nearer animation
+    // GAME_STATE_PREVIEW_TO_PLAY: ship pulling up and anchoring animation
+    // GAME_STATE_PLAY: game play
+    // GAME_STATE_PLAY_TO_EPILOG: ship unanchoring and pulling away animation
+    // GAME_STATE_EPILOG: ship sailing farther animation
+
+    private constant integer GAME_STATE_HELP = 1
+    private constant integer GAME_STATE_PAUSED = 2
+    private constant integer GAME_STATE_PREVIEW = 3
+    private constant integer GAME_STATE_PREVIEW_TO_PLAY = 4
+    private constant integer GAME_STATE_PLAY = 5
+    private constant integer GAME_STATE_PLAY_TO_EPILOG = 6
+    private constant integer GAME_STATE_EPILOG = 7
+
+    private integer gameState = 0
+
+    // gameTimer and gameProgress track the time and progress of the game
+    
+    private Timer gameTimer
+    private number gameTime = 0.0
+    private number gameProgress = 0.0
+    
+    // stateTimer and stateProgress track the time and progress of a state
+    
+    private Timer stateTimer
+    private number stateProgress = 0.0
     
     //**************************************************************************
     // action Main starts the game
@@ -56,6 +85,15 @@ class Main is Game
          
     action CreateGame
     
+        gameTime = configuration:gameStatePreviewTime + configuration:gameStatePreviewToPlayTime +
+            configuration:gameStatePlayTime +
+            configuration:gameStatePlayToEpilogTime + configuration:gameStateEpilogTime
+            
+        gameTimer:Start(gameTime)
+        
+        stateTimer:Start(configuration:gameStatePreviewTime)
+        gameState = GAME_STATE_PREVIEW
+        
     end // action CreateGame
 
     //**************************************************************************
@@ -81,6 +119,51 @@ class Main is Game
         
             Quit()
             
+        end
+        
+        if gameState = GAME_STATE_HELP
+        
+        else
+
+            if gameState not= GAME_STATE_PAUSED
+            
+                gameProgress = gameTimer:Progress(seconds)
+            
+                stateProgress = stateTimer:Progress(seconds)
+                
+            end
+        
+            if gameState = GAME_STATE_PREVIEW
+                if stateProgress <= 1.0
+                else
+                    stateTimer:Start(configuration:gameStatePreviewToPlayTime)
+                    gameState = GAME_STATE_PREVIEW_TO_PLAY
+                end
+            elseif gameState = GAME_STATE_PREVIEW_TO_PLAY
+                if stateProgress <= 1.0
+                else
+                    stateTimer:Start(configuration:gameStatePlayTime)
+                    gameState = GAME_STATE_PLAY
+                end
+            elseif gameState = GAME_STATE_PLAY
+                if stateProgress <= 1.0
+                else
+                    stateTimer:Start(configuration:gameStatePlayToEpilogTime)
+                    gameState = GAME_STATE_PLAY_TO_EPILOG
+                end
+            elseif gameState = GAME_STATE_PLAY_TO_EPILOG
+                if stateProgress <= 1.0
+                else
+                    stateTimer:Start(configuration:gameStateEpilogTime)
+                    gameState = GAME_STATE_EPILOG
+                end
+            elseif gameState = GAME_STATE_EPILOG
+                if stateProgress <= 1.0
+                else
+                    Exit()
+                end
+            end
+        
         end
 
     end // action Update

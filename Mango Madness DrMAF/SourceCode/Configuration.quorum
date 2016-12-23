@@ -17,13 +17,25 @@ use Libraries.System.FileReader
 
 class Configuration
 
+    //**************************************************************************
+    // class Configuration members
+    
     public text gameName = "Mango Madness"             // game name
         
-    public integer displayWidth = 1024                 // display width
-    public integer displayHeight = 768                 // display height
+    public integer displayWidth = 1024                 // display width (pixels)
+    public integer displayHeight = 768                 // display height (pixels)
         
     public boolean displayFullscreen = true            // fullscreen or windowed
 
+    public number gameStateHelpTime = 60.0             // time for game help state (seconds)
+    
+    public number gameStatePreviewTime = 120.0         // time for game preview state (seconds)
+    public number gameStatePreviewToPlayTime = 10.0    // time for game preview to play state (seconds)
+    public number gameStatePlayTime = 400.0            // time for game play state (seconds)
+    public number gameStatePlayToEpilogTime = 10.0     // time for game play to epilog state (seconds)
+    public number gameStateEpilogTime = 60.0           // time for game epilog state (seconds)
+    
+    //**************************************************************************
     // action Load loads configurable values from a configuration file
                                         
     public action Load(text configurationFilename)
@@ -97,6 +109,42 @@ class Configuration
                             elseif variableName = "displayFullscreen"
                                 displayFullscreen = variableValue:ParseBoolean()
                              
+                            elseif variableName = "gameStateHelpTime"
+                                gameStateHelpTime = variableValue:ParseNumber()
+                                if gameStateHelpTime < 0
+                                    alert("gameStateHelpTime not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "gameStatePreviewTime"
+                                gameStatePreviewTime = variableValue:ParseNumber()
+                                if gameStatePreviewTime < 0
+                                    alert("gameStatePreviewTime not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "gameStatePreviewToPlayTime"
+                                gameStatePreviewToPlayTime = variableValue:ParseNumber()
+                                if gameStatePreviewToPlayTime < 0
+                                    alert("gameStatePreviewToPlayTime not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "gameStatePlayTime"
+                                gameStatePlayTime = variableValue:ParseNumber()
+                                if gameStatePlayTime < 0
+                                    alert("gameStatePlayTime not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "gameStatePlayToEpilogTime"
+                                gameStatePlayToEpilogTime = variableValue:ParseNumber()
+                                if gameStatePlayToEpilogTime < 0
+                                    alert("gameStatePlayToEpilogTime not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "gameStateEpilogTime"
+                                gameStateEpilogTime = variableValue:ParseNumber()
+                                if gameStateEpilogTime < 0
+                                    alert("gameStateEpilogTime not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                end
+                            
                             else
                                 alert("Unrecognized variable name in configuration file (" + configurationFilename + "): " + line)
                             end
