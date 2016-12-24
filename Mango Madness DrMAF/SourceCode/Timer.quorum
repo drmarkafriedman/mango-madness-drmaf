@@ -16,8 +16,8 @@
 
 class Timer
 
-    private number elapsedTime = 0                     // time that has elapsed
-    private number completionTime = 0                  // time when timer completes
+    public number elapsedTime = 0                      // time that has elapsed
+    public number completionTime = 0                   // time when timer completes
         
     // action Start initiates the Timer specifying the time for completion
                                         

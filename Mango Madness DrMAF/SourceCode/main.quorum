@@ -60,10 +60,20 @@ class Main is Game
     private number gameTime = 0.0
     private number gameProgress = 0.0
     
+    // gameStateBeforePause and gameStateBeforeHelp allow a return to a previous state
+    
+    private integer gameStateBeforePause = 0
+    private integer gameStateBeforeHelp = 0
+    
     // stateTimer and stateProgress track the time and progress of a state
     
     private Timer stateTimer
     private number stateProgress = 0.0
+    
+    // helpTimer and helpProgress track the time and progress of the help state
+    
+    private Timer helpTimer
+    private number helpProgress = 0.0
     
     // debug mode speech synthesizer
     
@@ -104,20 +114,27 @@ class Main is Game
         gameState = GAME_STATE_PREVIEW
         
         if configuration:debugMode
-            debugSpeech:Say("Entering Game State Preview")
+            debugSpeech:Say("Entering Game", true)
+            debugSpeech:Say("Entering Game State Preview", true)
         end
         
     end // action CreateGame
 
     //**************************************************************************
-    // action Quit ends the game
+    // action MuteGameVolumes turns off the game volumes
          
-    action Quit
-    
-        Exit()
-        
-    end // action Quit
+    action MuteGameVolumes()
 
+    end // action MuteGameVolumes
+    
+    //**************************************************************************
+    // action UnmuteGameVolumes turns on the game volumes
+         
+    action UnmuteGameVolumes()
+
+    end // action UnmuteGameVolumes
+
+    
     //**************************************************************************
     // action Update updates each game frame
          
@@ -126,78 +143,158 @@ class Main is Game
         InputMonitor monitor
         KeyboardEvent keys
 
-        // Quit the game when the Q key is pressed
-
         if monitor:IsKeyPressed(keys:Q)
-        
-            Quit()
-            
+            Exit()
         end
-        
+            
         if gameState = GAME_STATE_HELP
         
+            helpProgress = helpTimer:Progress(seconds)
+            
+            if monitor:IsKeyPressed(keys:G) or helpProgress > 1.0
+                gameState = gameStateBeforeHelp
+                UnmuteGameVolumes()
+                
+                if configuration:debugMode
+                    debugSpeech:Say("Exiting Game State Help", true)
+                end
+                
+            else
+            end
+                
         else
-
-            if gameState not= GAME_STATE_PAUSED
+        
+            if monitor:IsKeyPressed(keys:P) and gameState not= GAME_STATE_PAUSED
             
-                gameProgress = gameTimer:Progress(seconds)
+                    gameStateBeforePause = gameState
+                    gameState = GAME_STATE_PAUSED
+                    MuteGameVolumes()
             
-                stateProgress = stateTimer:Progress(seconds)
+                    if configuration:debugMode
+                        debugSpeech:Say("Entering Game State Paused", true)
+                    end
+                
+            elseif monitor:IsKeyPressed(keys:R) and gameState = GAME_STATE_PAUSED
+            
+                    gameState = gameStateBeforePause
+                    UnmuteGameVolumes()
+            
+                    if configuration:debugMode
+                        debugSpeech:Say("Exiting Game State Paused", true)
+                    end
+                
+            elseif monitor:IsKeyPressed(keys:M)
+    
+                gameVolumesMuted = true
+                MuteGameVolumes()
+            
+                if configuration:debugMode
+                    debugSpeech:Say("Muting Game Volumes", true)
+                end
+                
+            elseif monitor:IsKeyPressed(keys:U)
+            
+                gameVolumesMuted = false
+                UnmuteGameVolumes()
+            
+                if configuration:debugMode
+                    debugSpeech:Say("Unmuting Game Volumes", true)
+                end
+                
+            elseif monitor:IsKeyPressed(keys:H)
+            
+                helpTimer:Start(configuration:gameStateHelpTime)
+                
+                gameStateBeforeHelp = gameState
+                gameState = GAME_STATE_HELP
+                MuteGameVolumes()
+                
+                if configuration:debugMode
+                    debugSpeech:Say("Entering Game State Help", true)
+                end
                 
             end
         
+            if gameState not= GAME_STATE_PAUSED
+        
+                gameProgress = gameTimer:Progress(seconds)
+                stateProgress = 20 * stateTimer:Progress(seconds)
+            
+            end
+    
             if gameState = GAME_STATE_PREVIEW
                 if stateProgress <= 1.0
                 else
+            
                     stateTimer:Start(configuration:gameStatePreviewToPlayTime)
                     gameState = GAME_STATE_PREVIEW_TO_PLAY
+                
                     if configuration:debugMode
-                        debugSpeech:Say("Entering Game State Preview To Play")
+                        debugSpeech:Say("Exiting Game State Preview", true)
+                        debugSpeech:Say("Entering Game State Preview To Play", true)
                     end
+                
                 end
             elseif gameState = GAME_STATE_PREVIEW_TO_PLAY
                 if stateProgress <= 1.0
                 else
+            
                     stateTimer:Start(configuration:gameStatePlayTime)
                     gameState = GAME_STATE_PLAY
+                
                     if configuration:debugMode
-                        debugSpeech:Say("Entering Game State Play")
+                        debugSpeech:Say("Exiting Game State Preview To Play", true)
+                        debugSpeech:Say("Entering Game State Play", true)
                     end
+                
                 end
             elseif gameState = GAME_STATE_PLAY
                 if stateProgress <= 1.0
                 else
+            
                     stateTimer:Start(configuration:gameStatePlayToEpilogTime)
                     gameState = GAME_STATE_PLAY_TO_EPILOG
+            
                     if configuration:debugMode
-                        debugSpeech:Say("Entering Game State Play To Epilog")
+                        debugSpeech:Say("Exiting Game State Play", true)
+                        debugSpeech:Say("Entering Game State Play To Epilog", true)
                     end
+            
                 end
             elseif gameState = GAME_STATE_PLAY_TO_EPILOG
                 if stateProgress <= 1.0
                 else
+            
                     stateTimer:Start(configuration:gameStateEpilogTime)
                     gameState = GAME_STATE_EPILOG
+            
                     if configuration:debugMode
-                        debugSpeech:Say("Entering Game State Epilog")
+                        debugSpeech:Say("Exiting Game State Play To Epilog", true)
+                        debugSpeech:Say("Entering Game State Epilog", true)
                     end
+            
                 end
             elseif gameState = GAME_STATE_EPILOG
                 if stateProgress <= 1.0
                 else
-                    Exit()
+            
                     if configuration:debugMode
-                        debugSpeech:Say("Exiting Game")
+                        debugSpeech:Say("Exiting Game State Epilog", true)
+                        debugSpeech:Say("Exiting Game", true)
                     end
+                    
+                    Exit()
+            
                 end
-            end
-        
-        end
+                
+            end // gameState
+    
+        end // GAME_STATE_HELP
 
     end // action Update
 
 end // class Main
 
-/* Local Variables:      */
+/* Local Variables:  */
 /* indent-tabs-mode: nil */
-/* End:                  */
+/* End:              */
