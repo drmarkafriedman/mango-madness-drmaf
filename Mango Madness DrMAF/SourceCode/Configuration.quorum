@@ -27,6 +27,12 @@ class Configuration
         
     public boolean displayFullscreen = true            // fullscreen or windowed
 
+    public number speechVolume = 100.0                 // synthesized speech volume (0 to 100)
+    
+    public boolean playIntroduction = true             // play or not play introduction
+
+    public text introductionText = "Welcome to Mango Madness. Conceived by Tommy P . Developed by Mark, Sam and Tom. Aim the cannon and shoot mangos at the flying seagulls. Knock the mangos out of the sky to score points. At any time, press the H key to obtain help. Good luck. May the madness be with you."
+    
     public number gameStateHelpTime = 60.0             // time for game help state (seconds)
     
     public number gameStatePreviewTime = 120.0         // time for game preview state (seconds)
@@ -99,18 +105,32 @@ class Configuration
                             elseif variableName = "displayWidth"
                                 displayWidth = variableValue:ParseInteger()
                                 if displayWidth <= 0
-                                    alert("displayWidth not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                    alert("displayWidth must be greater than 0 in configuration file (" + configurationFilename + "): " + line)
                                 end
                                 
                             elseif variableName = "displayHeight"
                                 displayHeight = variableValue:ParseInteger()
                                 if displayHeight <= 0
-                                    alert("displayHeight not set to a positive integer in configuration file (" + configurationFilename + "): " + line)
+                                    alert("displayHeight must be greater than 0 in configuration file (" + configurationFilename + "): " + line)
                                 end
                                 
                             elseif variableName = "displayFullscreen"
                                 displayFullscreen = variableValue:ParseBoolean()
                              
+                            elseif variableName = "speechVolume"
+                                speechVolume = variableValue:ParseNumber()
+                                if speechVolume < 0
+                                    alert("speechVolume must be greater than or equal to 0 in configuration file (" + configurationFilename + "): " + line)
+                                elseif speechVolume > 100
+                                    alert("speechVolume must be less than or equal to 100 in configuration file (" + configurationFilename + "): " + line)
+                                end
+                                
+                            elseif variableName = "playIntroduction"
+                                playIntroduction = variableValue:ParseBoolean()
+                                
+                            elseif variableName = "introductionText"
+                                introductionText = variableValue
+    
                             elseif variableName = "gameStateHelpTime"
                                 gameStateHelpTime = variableValue:ParseNumber()
                                 if gameStateHelpTime < 0

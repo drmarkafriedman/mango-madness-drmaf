@@ -26,13 +26,20 @@ class Main is Game
     //**************************************************************************
     // class Main members
     
-    // The configuration object manages the game's configurable values which
-    // have hardcoded default values and which may be changed through the
+    // configuration object manages the game's configurable values which have
+    // hardcoded default values and which may be changed through the
     // configuration file specified below
     
     public Configuration configuration
         
     private constant text CONFIGURATION_FILENAME = "configuration/mango-madness.ini"
+    
+    // speech object allows synthesized speech (introduction, instructions, hints)
+    
+    Speech speech
+    
+    number speechPitch = 0.0
+    number speechSpeed = 0.5
 
     // gameState holds the current state of the game
     
@@ -104,6 +111,14 @@ class Main is Game
          
     action CreateGame
     
+        speech:SetPitch(speechPitch)
+        speech:SetSpeed(speechSpeed)
+        speech:SetVolume(configuration:speechVolume)
+
+        if configuration:playIntroduction
+	    speech:Say(configuration:introductionText, true)
+	end
+	
         gameTime = configuration:gameStatePreviewTime + configuration:gameStatePreviewToPlayTime +
             configuration:gameStatePlayTime +
             configuration:gameStatePlayToEpilogTime + configuration:gameStateEpilogTime
